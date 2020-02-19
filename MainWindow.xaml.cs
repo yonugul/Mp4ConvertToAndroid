@@ -121,25 +121,34 @@ namespace Mp4ConvertToAndroid
                     //var outputFile = "s1.mp4";
                     var outputFile = inputFile.Replace(".mp4", "_new.mp4");
                     var backupFile = inputFile.Replace(".mp4", ".backup");
-                    var thisVideoStart = allTime.Elapsed;
-                    using (var ffmpeg = new FFmpeg(FFmpegFileName))
+                    if (!File.Exists(backupFile))
                     {
-                        AddMessage($"***{inputFile} dönüştürme işlemi başladı ");
-                        var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
-                        ffmpeg.Run(inputFile, outputFile, commandLine);
+                        var thisVideoStart = allTime.Elapsed;
+                        using (var ffmpeg = new FFmpeg(FFmpegFileName))
+                        {
+                            AddMessage($"***{inputFile} dönüştürme işlemi başladı ");
+                            var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
+                            ffmpeg.Run(inputFile, outputFile, commandLine);
+                        }
+                        AddMessage($"*** {inputFile} dönüştürme işlemi tamamlandı ", allTime.Elapsed.Subtract(thisVideoStart));
+                        success++;
+                        //eski video ile yeni video yer değiştiriliyor
+                        //File.Move(inputFile, backupFile);
+                        MoveWithReplace(inputFile, backupFile);
+                        File.Delete(inputFile); // Delete the existing file if exists
+                        //File.Move(outputFile, inputFile);
+                        MoveWithReplace(outputFile, inputFile);
+                        if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
+                        {
+                            File.Delete(backupFile);
+                        }
                     }
-                    AddMessage($"*** {inputFile} dönüştürme işlemi tamamlandı ", allTime.Elapsed.Subtract(thisVideoStart));
-                    success++;
-                    //eski video ile yeni video yer değiştiriliyor
-                    //File.Move(inputFile, backupFile);
-                    MoveWithReplace(inputFile, backupFile);
-                    File.Delete(inputFile); // Delete the existing file if exists
-                                            //File.Move(outputFile, inputFile);
-                    MoveWithReplace(outputFile, inputFile);
-                    if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
+                    else
                     {
-                        File.Delete(backupFile);
+                        AddMessage($"{inputFile} önceden dönüştürülmüş ");
+                        success++;
                     }
+
                 }
                 catch (Exception ex)
                 {
@@ -265,6 +274,14 @@ namespace Mp4ConvertToAndroid
             state = false;
             btnPause.IsEnabled = false;
             btnPlay.IsEnabled = true;
+        }
+
+        private void ClearBackup(object sender, RoutedEventArgs e)
+        {
+            var backupFiles = Directory.GetFiles(folder.Text, "*.backup*", SearchOption.AllDirectories).ToList();
+            AddMessage($"silinecek backup sayısı : {backupFiles.Count}");
+            backupFiles.ForEach(File.Delete);
+            AddMessage($"tüm dosyalar silindi");
         }
     }
 }

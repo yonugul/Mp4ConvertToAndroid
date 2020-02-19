@@ -26,7 +26,8 @@
                 <Label x:Name="completedText"  HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
             </DockPanel>
        
-            <CheckBox x:Name="checkBox" IsChecked="True" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Backup Dosyalarını Sil" Width="169" />
+            <CheckBox x:Name="checkBox" IsChecked="True" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Backup Dosyalarını Sil" Width="257" />
+            <Button HorizontalAlignment="Right" Click="ClearBackup" VerticalAlignment="Center" Content="Backup Temizle" Width="150" />
         </DockPanel>
 
         <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="700">
