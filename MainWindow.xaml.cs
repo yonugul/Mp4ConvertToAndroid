@@ -64,7 +64,7 @@ namespace Mp4ConvertToAndroid
             if (progressB > 0)
             {
                 progressBar.Value = progressB;
-                completedText.Content = text;
+                completedText.Content = text + "% " + progressB;
             }
 
             Application.Current.Dispatcher?.Invoke(DispatcherPriority.Background, new Action(UpdateLayout));
@@ -108,8 +108,7 @@ namespace Mp4ConvertToAndroid
 
         private void convert()
         {
-
-
+           
             AddMessage($"Dönüştürülecek Video Sayısı : {all - completed}");
             while (counter < all && state)
             {
@@ -121,7 +120,7 @@ namespace Mp4ConvertToAndroid
                     //var outputFile = "s1.mp4";
                     var outputFile = inputFile.Replace(".mp4", "_new.mp4");
                     var backupFile = inputFile.Replace(".mp4", ".backup");
-                    if (!File.Exists(backupFile))
+                    if (!File.Exists(backupFile) && !Properties.Settings.Default.ConvertedVideos.Contains(inputFile))
                     {
                         var thisVideoStart = allTime.Elapsed;
                         using (var ffmpeg = new FFmpeg(FFmpegFileName))
@@ -156,6 +155,11 @@ namespace Mp4ConvertToAndroid
                     error++;
                 }
 
+                if (!Properties.Settings.Default.ConvertedVideos.Contains(inputFile))
+                {
+                    Properties.Settings.Default.ConvertedVideos.Add(inputFile);
+                    Properties.Settings.Default.Save();
+                }
                 completed++;
                 counter++;
                 var percent = completed / all * 100;

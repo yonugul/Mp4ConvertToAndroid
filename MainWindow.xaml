@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="800">
     <StackPanel>
         <Grid Height="340">
             
@@ -16,7 +16,7 @@
                 </TextBlock>
             </ScrollViewer>
         </Grid>
-        <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100" Value="0" Height="10" Width="700" Padding="2"/>
+        <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100" Value="0" Height="10" Width="700" Margin="5"/>
         <DockPanel Width="700">
             <DockPanel VerticalAlignment="Center">
                 <Label  HorizontalAlignment="Left" VerticalAlignment="Center">Kullanılacak Cpu</Label>
@@ -27,19 +27,20 @@
             </DockPanel>
        
             <CheckBox x:Name="checkBox" IsChecked="True" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Backup Dosyalarını Sil" Width="257" />
-            <Button HorizontalAlignment="Right" Click="ClearBackup" VerticalAlignment="Center" Content="Backup Temizle" Width="150" />
+  
         </DockPanel>
-
-        <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="700">
-            <DockPanel HorizontalAlignment="Left" VerticalAlignment="Center" Width="340">
-                <Label HorizontalAlignment="Left" Height="30" VerticalAlignment="Center">Klasör Adresi</Label>
-                <TextBox x:Name="folder" TextWrapping="Wrap"  HorizontalAlignment="Right" VerticalAlignment="Center" Width="180" Height="30"></TextBox>
-            </DockPanel>
-            <DockPanel HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="340">
+        <DockPanel Width="700">
+            <Label HorizontalAlignment="Left" Height="30" VerticalAlignment="Center">Klasör Adresi</Label>
+            <TextBox x:Name="folder" TextWrapping="Wrap"  HorizontalAlignment="Right" VerticalAlignment="Center" Width="600" Height="30"></TextBox>
+        </DockPanel>
+        <DockPanel Width="700">
+    
+            <DockPanel HorizontalAlignment="Right" VerticalAlignment="Center" Height="40" Width="700">
                
-                <Button Width="75" Height="30" HorizontalAlignment="Left" Click="Clear_Click" Content="Temizle" Margin="0,0,10,0"/>
-                <Button x:Name="btnPlay" Width="50" Height="30" HorizontalAlignment="Center" Click="Play" Content=">" Background="Green" IsEnabled="False"/>
-                <Button x:Name="btnPause" Width="50" Height="30" HorizontalAlignment="Center" Click="Pause" Content="||" Background="Red" IsEnabled="False"/>
+                <Button Width="150" Height="30" HorizontalAlignment="Left" Click="Clear_Click" Content="Ekranı Temizle" Margin="0,0,10,0"/>
+                <Button HorizontalAlignment="Right" Click="ClearBackup" VerticalAlignment="Center" Content="Backup Temizle" Margin="0,0,10,0" Width="150" Height="30"/>
+                <Button x:Name="btnPlay" Width="50" Height="30" HorizontalAlignment="Right" Click="Play" Content=">" Background="Green" IsEnabled="False"/>
+                <Button x:Name="btnPause" Width="50" Height="30" HorizontalAlignment="Right" Click="Pause" Content="||" Background="Red" IsEnabled="False"/>
                 <Button Width="150" Height="30" HorizontalAlignment="Right" Click="ButtonRun_Click" Content="Videoları Dönüştür" x:Name="buttonConvert" Background="CadetBlue"/>
 
             </DockPanel>
