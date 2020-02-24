@@ -9,11 +9,15 @@
         <Grid Height="340">
             
             <ScrollViewer Name="scrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Height="340" HorizontalAlignment="Stretch">
-                <TextBlock x:Name="progress" TextWrapping="Wrap" Width="780" Background="Black" Padding="10" Foreground="Yellow">
-                    <Run Text="Videoların dönüştürüleceği klasör adresi aşağıdaki alana girildikten sonra videoları dönüştür butonu ile tüm alt klasördekiler dahil videolar dönüştürülecektir." Foreground="Yellow" />
-                    <LineBreak/>
-                    <Run Text="Dikkat : Bu işlem uzun sürebilir ve sunucunun işlemci yükünü artırabilir." Foreground="Red" />
-                </TextBlock>
+                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="340" Background="Black">
+                    <TextBlock x:Name="stickyTexts" TextWrapping="Wrap" Width="780" Background="Black" Padding="10" Foreground="Yellow">
+                        <Run Text="Videoların dönüştürüleceği klasör adresi aşağıdaki alana girildikten sonra videoları dönüştür butonu ile tüm alt klasördekiler dahil videolar dönüştürülecektir." Foreground="Yellow" />
+                        <LineBreak/>
+                        <Run Text="Dikkat : Bu işlem uzun sürebilir ve sunucunun işlemci yükünü artırabilir." Foreground="Red" />
+                    </TextBlock>
+                    <TextBlock x:Name="progressTexts" TextWrapping="Wrap" Width="780" Background="Black" Padding="10" Foreground="Yellow">
+                    </TextBlock>
+                </StackPanel>
             </ScrollViewer>
         </Grid>
         <ProgressBar x:Name="progressBar" Minimum="0" Maximum="100" Value="0" Height="10" Width="700" Margin="5"/>
@@ -21,12 +25,13 @@
             <DockPanel VerticalAlignment="Center">
                 <Label  HorizontalAlignment="Left" VerticalAlignment="Center">Kullanılacak Cpu</Label>
                 <TextBox x:Name="useCpuCount"  HorizontalAlignment="Right" Width="40" Height="20" Text="8" TextChanged="UseCpuCount_OnTextChanged" HorizontalContentAlignment="Right"/>
-                <Label x:Name="totalCpuCount"  HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
-                <Label x:Name="cpuUsePercent"  HorizontalAlignment="Left" VerticalAlignment="Center"></Label>
-                <Label x:Name="completedText"  HorizontalAlignment="Right" VerticalAlignment="Center"></Label>
+                <Label x:Name="totalCpuCount"  HorizontalAlignment="Left" VerticalAlignment="Center">24</Label>
+                <Label x:Name="cpuUsePercent"  HorizontalAlignment="Left" VerticalAlignment="Center">%50</Label>
             </DockPanel>
        
             <CheckBox x:Name="checkBox" IsChecked="True" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Backup Dosyalarını Sil" Width="257" />
+            <Label x:Name="lblProcessTime"  HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Green">toplam süre 00:00:00</Label>
+
   
         </DockPanel>
         <DockPanel Width="700">

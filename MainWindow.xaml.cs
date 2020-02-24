@@ -33,17 +33,22 @@ namespace Mp4ConvertToAndroid
             totalCpuCount.Content = Environment.ProcessorCount;
             showPercent();
             code = baseCode + useCpuCount.Text;
-            AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow);
+            AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow,sticky:true);
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastFolder))
+            {
+                folder.Text = Properties.Settings.Default.LastFolder;
+            }
         }
-        private void AddMessage(string text, TimeSpan? d = null, Color? c = null, bool clearPrevious = false, double progressB = 0)
+        private void AddMessage(string text, TimeSpan? d = null, Color? c = null, bool clearPrevious = false, double progressB = 0,bool sticky=false)
         {
+            var tBlock = sticky ? stickyTexts : progressTexts;
             if (clearPrevious)
             {
-                progress.Inlines.Clear();
+                progressTexts.Inlines.Clear();
             }
             else
             {
-                progress.Inlines.Add(new LineBreak());
+                tBlock.Inlines.Add(new LineBreak());
             }
             var textcolor = c ?? Colors.Green;
 
@@ -52,22 +57,26 @@ namespace Mp4ConvertToAndroid
                 Text = text,
                 Foreground = new SolidColorBrush(textcolor)
             };
-            progress.Inlines.Add(newText);
+            tBlock.Inlines.Add(newText);
             if (d.HasValue)
             {
                 var br = d.Value.TotalSeconds < 1 ? Brushes.Green :
                     d.Value.TotalSeconds >= 1 && d.Value.TotalSeconds < 5 ? Brushes.Yellow : Brushes.Red;
-                progress.Inlines.Add(new Run { Text = $"işlem süresi : {d.Value.TotalSeconds:0.####} s", Foreground = br });
+                tBlock.Inlines.Add(new Run { Text = $"işlem süresi : {d.Value.TotalSeconds:0.####} s", Foreground = br });
 
             }
 
             if (progressB > 0)
             {
                 progressBar.Value = progressB;
-                completedText.Content = text + "% " + progressB;
+         
             }
 
             Application.Current.Dispatcher?.Invoke(DispatcherPriority.Background, new Action(UpdateLayout));
+            if (allTime != null)
+            {
+                lblProcessTime.Content = allTime.Elapsed.ToString(@"hh\:mm\:ss");
+            }
             scrollViewer.ScrollToBottom();
         }
 
@@ -76,8 +85,8 @@ namespace Mp4ConvertToAndroid
         private static List<string> filePaths;
         private bool state = true;
         private int counter = 0;
-        int success = 0, error = 0;
-        double completed = 0, all = 0;
+        private int success = 0, error = 0;
+        private double completed = 0, all = 0;
         private Stopwatch allTime;
         private void ButtonRun_Click(object sender, RoutedEventArgs e)
         {
@@ -87,9 +96,19 @@ namespace Mp4ConvertToAndroid
             {
                 buttonConvert.IsEnabled = false;
                 btnPause.IsEnabled = true;
-
+                Properties.Settings.Default.LastFolder = folder.Text;
+                Properties.Settings.Default.Save();
                 //DirSearch(folder.Text);
                 filePaths = Directory.GetFiles(folder.Text, "*.mp4*", SearchOption.AllDirectories).ToList();
+                var convertedBeforeList = Properties.Settings.Default.ConvertedVideos.Cast<string>().ToList();
+                var intersect=           filePaths.Intersect(convertedBeforeList).Count();
+                if (intersect>0)
+                {
+                    AddMessage($"{intersect} önceden dönüştürülmüş toplam {filePaths.Count} dosya" ,sticky:true);
+                    filePaths = filePaths.Except(convertedBeforeList).ToList();
+
+                }
+
                 allTime = Stopwatch.StartNew();
                 all = filePaths.Count;
                 convert();
@@ -108,8 +127,11 @@ namespace Mp4ConvertToAndroid
 
         private void convert()
         {
-           
-            AddMessage($"Dönüştürülecek Video Sayısı : {all - completed}");
+
+            AddMessage($"Dönüştürülecek Video Sayısı : {all - completed}",sticky:true);
+
+
+
             while (counter < all && state)
             {
                 var inputFile = filePaths[counter];
@@ -120,16 +142,16 @@ namespace Mp4ConvertToAndroid
                     //var outputFile = "s1.mp4";
                     var outputFile = inputFile.Replace(".mp4", "_new.mp4");
                     var backupFile = inputFile.Replace(".mp4", ".backup");
-                    if (!File.Exists(backupFile) && !Properties.Settings.Default.ConvertedVideos.Contains(inputFile))
+                    if (!File.Exists(backupFile))
                     {
                         var thisVideoStart = allTime.Elapsed;
                         using (var ffmpeg = new FFmpeg(FFmpegFileName))
                         {
-                            AddMessage($"***{inputFile} dönüştürme işlemi başladı ");
+                            AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
                             var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
                             ffmpeg.Run(inputFile, outputFile, commandLine);
                         }
-                        AddMessage($"*** {inputFile} dönüştürme işlemi tamamlandı ", allTime.Elapsed.Subtract(thisVideoStart));
+                        AddMessage($" || {inputFile} dönüştürüldü ", allTime.Elapsed.Subtract(thisVideoStart));
                         success++;
                         //eski video ile yeni video yer değiştiriliyor
                         //File.Move(inputFile, backupFile);
@@ -151,19 +173,21 @@ namespace Mp4ConvertToAndroid
                 }
                 catch (Exception ex)
                 {
-                    AddMessage($"***{inputFile} dönüştürülemedi  : " + ex.Message, c: Colors.Red);
+                    AddMessage($" ! {inputFile} dönüştürülemedi  : " + ex.Message, c: Colors.Red,sticky:true);
                     error++;
                 }
 
-                if (!Properties.Settings.Default.ConvertedVideos.Contains(inputFile))
-                {
-                    Properties.Settings.Default.ConvertedVideos.Add(inputFile);
-                    Properties.Settings.Default.Save();
-                }
+                //if (!Properties.Settings.Default.ConvertedVideos.Contains(inputFile))
+                //{
+                //    Properties.Settings.Default.ConvertedVideos.Add(inputFile);
+                //    Properties.Settings.Default.Save();
+                //}
+                Properties.Settings.Default.ConvertedVideos.Add(inputFile);
+                Properties.Settings.Default.Save();
                 completed++;
                 counter++;
                 var percent = completed / all * 100;
-                AddMessage($"ilerleme {completed} / {all} ", progressB: percent);
+                AddMessage($"ilerleme {completed} / {all} % {percent:0.####}", progressB: percent,clearPrevious:true);
 
                 //File.Replace(inputFile, outputFile, backupFile);
                 //File.Delete(outputFile);
@@ -215,9 +239,17 @@ namespace Mp4ConvertToAndroid
             if (completed == all)
             {
                 allTime.Stop();
-                AddMessage($"*** Tüm videolar başarıyla dönüştürüldü", allTime.Elapsed);
-                AddMessage($"Başarılı  : {success}", c: Colors.Green);
-                AddMessage($"Başarısız : {error}", c: Colors.Red);
+                AddMessage($" >>> Tüm videolar başarıyla dönüştürüldü <<< ", allTime.Elapsed);
+                if (success>0)
+                {
+                    AddMessage($"Başarılı  : {success}", c: Colors.Green);
+
+                }
+                if (error > 0)
+                {
+                    AddMessage($"Başarısız : {error}", c: Colors.Red);
+
+                }
                 counter = 0;
                 completed = 0;
                 all = 0;
@@ -242,7 +274,7 @@ namespace Mp4ConvertToAndroid
         }
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            progress.Inlines.Clear();
+            progressTexts.Inlines.Clear();
         }
 
         private void showPercent()
@@ -259,7 +291,7 @@ namespace Mp4ConvertToAndroid
             {
                 showPercent();
                 code = baseCode + useCpuCount.Text;
-                AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow);
+                AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow,sticky:true);
             }
 
         }
