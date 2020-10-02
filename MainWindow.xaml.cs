@@ -24,6 +24,7 @@ namespace Mp4ConvertToAndroid
 
         private string InputFile;
 
+        private string convertFileExt = ".mp4";
         // Note that cancellation is only implemented in this demo in method ButtonConvertEAC_Click
         private CancellationTokenSource CancellationTokenSource;
 
@@ -81,6 +82,7 @@ namespace Mp4ConvertToAndroid
         }
 
         private const string baseCode = "-c:v libx264 -profile:v baseline -level 3.0 -preset:v veryfast -threads ";
+        private const string webmbaseCode = "-vf scale=1680:-2 -r 40 -max_muxing_queue_size 1024 -preset:v veryfast -threads ";
         private static string code;
         private static List<string> filePaths;
         private bool state = true;
@@ -99,7 +101,7 @@ namespace Mp4ConvertToAndroid
                 Properties.Settings.Default.LastFolder = folder.Text;
                 Properties.Settings.Default.Save();
                 //DirSearch(folder.Text);
-                filePaths = Directory.GetFiles(folder.Text, "*.mp4*", SearchOption.AllDirectories).ToList();
+                filePaths = Directory.GetFiles(folder.Text, "*" + convertFileExt + "*", SearchOption.AllDirectories).ToList();
                 var convertedBeforeList = Properties.Settings.Default.ConvertedVideos.Cast<string>().ToList();
                 var intersect = filePaths.Intersect(convertedBeforeList).Count();
                 if (intersect > 0)
@@ -140,8 +142,8 @@ namespace Mp4ConvertToAndroid
                     //AddMessage("***Start FFmpeg");
                     //var inputFile = "s1old.mp4";
                     //var outputFile = "s1.mp4";
-                    var outputFile = inputFile.Replace(".mp4", "_new.mp4");
-                    var backupFile = inputFile.Replace(".mp4", ".backup");
+                    var outputFile = inputFile.Replace(convertFileExt, "_new.mp4");
+                    var backupFile = inputFile.Replace(convertFileExt, ".backup");
                     if (!File.Exists(backupFile))
                     {
                         var thisVideoStart = allTime.Elapsed;
@@ -157,8 +159,9 @@ namespace Mp4ConvertToAndroid
                         //File.Move(inputFile, backupFile);
                         MoveWithReplace(inputFile, backupFile);
                         File.Delete(inputFile); // Delete the existing file if exists
-                        //File.Move(outputFile, inputFile);
-                        MoveWithReplace(outputFile, inputFile);
+                                                //File.Move(outputFile, inputFile);
+
+                        MoveWithReplace(outputFile, Path.ChangeExtension(inputFile,".mp4"));
                         if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
                         {
                             File.Delete(backupFile);
@@ -267,6 +270,27 @@ namespace Mp4ConvertToAndroid
             AddMessage($"silinecek backup sayısı : {backupFiles.Count}");
             backupFiles.ForEach(File.Delete);
             AddMessage($"tüm dosyalar silindi");
+        }
+
+        private void mp4_OnSelected(object sender, RoutedEventArgs e)
+        {
+            convertFileExt = ".mp4";
+            code = baseCode + useCpuCount.Text;
+            AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow, sticky: true);
+        }
+
+        private void webm_OnSelected(object sender, RoutedEventArgs e)
+        {
+            convertFileExt = ".webm";
+            code = webmbaseCode + useCpuCount.Text;
+            AddMessage("Dönüştürme için kullanılan ffmpeg kodu : " + code, c: Colors.Yellow, sticky: true);
+        }
+
+        private void Clear_History(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.ConvertedVideos.Clear();
+            Properties.Settings.Default.errors.Clear();
+            Properties.Settings.Default.Save();
         }
     }
 }
