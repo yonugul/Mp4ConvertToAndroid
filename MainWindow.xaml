@@ -78,11 +78,17 @@
 
             <CheckBox
                 x:Name="checkBox"
-                Width="257"
+                Width="200"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Backup Dosyalarını Sil"
                 IsChecked="True" />
+            <CheckBox
+                x:Name="onlyBigFiles"
+                Width="100"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Content="Only Big Files" />
             <ComboBox
                 Name="ComboBox1"
                 Width="80"

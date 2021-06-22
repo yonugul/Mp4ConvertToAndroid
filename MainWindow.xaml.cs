@@ -144,28 +144,60 @@ namespace Mp4ConvertToAndroid
                     //var outputFile = "s1.mp4";
                     var outputFile = inputFile.Replace(convertFileExt, "_new.mp4");
                     var backupFile = inputFile.Replace(convertFileExt, ".backup");
+                    var convert = false;
+                    var thisVideoStart = allTime.Elapsed;
                     if (!File.Exists(backupFile))
                     {
-                        var thisVideoStart = allTime.Elapsed;
-                        using (var ffmpeg = new FFmpeg(FFmpegFileName))
+                        if (inputFile.EndsWith(".mp4") )
                         {
-                            AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
-                            var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
-                            ffmpeg.Run(inputFile, outputFile, commandLine);
-                        }
-                        AddMessage($" || {inputFile} dönüştürüldü ", allTime.Elapsed.Subtract(thisVideoStart));
-                        success++;
-                        //eski video ile yeni video yer değiştiriliyor
-                        //File.Move(inputFile, backupFile);
-                        MoveWithReplace(inputFile, backupFile);
-                        File.Delete(inputFile); // Delete the existing file if exists
-                                                //File.Move(outputFile, inputFile);
+                            if (onlyBigFiles.IsChecked.HasValue && onlyBigFiles.IsChecked.Value)
+                            {
+                                var size = new FileInfo(inputFile).Length / (double)(1024 * 1024);
+                                if (size>10)
+                                {
+                                    //convert
+                                    convert = true;
+                                }
+                                else
+                                {
+                                    //do not convert
+                                    AddMessage($" || {inputFile} dönüştürülmedi, dosya büyük değil ", allTime.Elapsed.Subtract(thisVideoStart));
+                                    error++;
+                                }
+                            }
+                            else
+                            {
+                                //convert
+                                convert = true;
+                            }
 
-                        MoveWithReplace(outputFile, Path.ChangeExtension(inputFile,".mp4"));
-                        if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
-                        {
-                            File.Delete(backupFile);
+                            if (convert)
+                            {
+                                using (var ffmpeg = new FFmpeg(FFmpegFileName))
+                                {
+                                    AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
+                                    var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
+                                    ffmpeg.Run(inputFile, outputFile, commandLine);
+                                }
+                                AddMessage($" || {inputFile} dönüştürüldü ", allTime.Elapsed.Subtract(thisVideoStart));
+                                success++;
+                                //eski video ile yeni video yer değiştiriliyor
+                                MoveWithReplace(inputFile, backupFile);
+                                File.Delete(inputFile); // Delete the existing file if exists
+                                MoveWithReplace(outputFile, Path.ChangeExtension(inputFile, ".mp4"));
+                                if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
+                                {
+                                    File.Delete(backupFile);
+                                }
+                            }
                         }
+                        else
+                        {
+                            //bu dosyanın video çözüm öğretmenleri tarafından silindiği düşünülerek silinmesi sağlanacak
+                            File.Delete(inputFile);
+                            //File.Move(inputFile, Path.ChangeExtension(inputFile,".deleted"));
+                        }
+
                     }
                     else
                     {
