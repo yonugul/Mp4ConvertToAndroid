@@ -5,188 +5,206 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
-    Width="800"
+    Width="1200"
     Height="500"
     mc:Ignorable="d">
-    <StackPanel>
-        <Grid Height="340">
+    <DockPanel>
+        <StackPanel>
+            <Grid Height="340">
+                <ScrollViewer
+                    Name="scrollViewer"
+                    Height="340"
+                    HorizontalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <StackPanel
+                        Height="340"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="Black">
+                        <TextBlock
+                            Width="780"
+                            Padding="10"
+                            Background="Black"
+                            Foreground="Yellow"
+                            TextWrapping="Wrap">
+                            <Run Foreground="Yellow" Text="Videoların dönüştürüleceği klasör adresi aşağıdaki alana girildikten sonra videoları dönüştür butonu ile tüm alt klasördekiler dahil videolar dönüştürülecektir." />
+                            <LineBreak />
+                            <Run Foreground="Red" Text="Dikkat : Bu işlem uzun sürebilir ve sunucunun işlemci yükünü artırabilir." />
+                        </TextBlock>
+                        <TextBlock
+                            x:Name="progressTexts"
+                            Width="780"
+                            Padding="10"
+                            Background="Black"
+                            Foreground="Yellow"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+            <ProgressBar
+                x:Name="progressBar"
+                Width="700"
+                Height="10"
+                Margin="5"
+                Maximum="100"
+                Minimum="0"
+                Value="0" />
+            <DockPanel Width="700">
+                <DockPanel VerticalAlignment="Center">
+                    <Label HorizontalAlignment="Left" VerticalAlignment="Center">Kullanılacak Cpu</Label>
+                    <TextBox
+                        x:Name="useCpuCount"
+                        Width="40"
+                        Height="20"
+                        HorizontalAlignment="Right"
+                        HorizontalContentAlignment="Right"
+                        Text="8"
+                        TextChanged="UseCpuCount_OnTextChanged" />
+                    <Label
+                        x:Name="totalCpuCount"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                        24
+                    </Label>
+                    <Label
+                        x:Name="cpuUsePercent"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                        %50
+                    </Label>
+                </DockPanel>
 
+                <CheckBox
+                    x:Name="checkBox"
+                    Width="200"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Content="Backup Dosyalarını Sil"
+                    IsChecked="True" />
+                <CheckBox
+                    x:Name="onlyBigFiles"
+                    Width="100"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Content="Only Big Files" />
+                <ComboBox
+                    Name="ComboBox1"
+                    Width="80"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+                    <ComboBoxItem
+                        Content=".mp4"
+                        IsSelected="True"
+                        Selected="mp4_OnSelected" />
+                    <ComboBoxItem Content=".webm" Selected="webm_OnSelected" />
+                </ComboBox>
+                <Label
+                    x:Name="lblProcessTime"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Foreground="Green">
+                    toplam süre 00:00:00
+                </Label>
+
+
+            </DockPanel>
+            <DockPanel Width="700">
+                <Label
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                    Klasör Adresi
+                </Label>
+                <TextBox
+                    x:Name="folder"
+                    Width="600"
+                    Height="30"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    TextWrapping="Wrap" />
+            </DockPanel>
+            <DockPanel Width="700">
+
+                <DockPanel
+                    Width="700"
+                    Height="40"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+
+                    <Button
+                        Width="150"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        HorizontalAlignment="Left"
+                        Click="Clear_Click"
+                        Content="Ekranı Temizle" />
+                    <Button
+                        Width="150"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Click="ClearBackup"
+                        Content="Backup Temizle" />
+                    <Button
+                        x:Name="btnPlay"
+                        Width="50"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Background="Green"
+                        Click="Play"
+                        Content="&gt;"
+                        IsEnabled="False" />
+                    <Button
+                        x:Name="btnPause"
+                        Width="50"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Background="Red"
+                        Click="Pause"
+                        Content="||"
+                        IsEnabled="False" />
+                    <Button
+                        x:Name="btnRemoveHistory"
+                        Width="50"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Background="Red"
+                        Click="Clear_History"
+                        Content="temizle" />
+                    <Button
+                        x:Name="buttonConvert"
+                        Width="150"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Background="CadetBlue"
+                        Click="ButtonRun_Click"
+                        Content="Videoları Dönüştür" />
+
+                </DockPanel>
+
+            </DockPanel>
+        </StackPanel>
+        <StackPanel
+            Width="400"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
             <ScrollViewer
-                Name="scrollViewer"
-                Height="340"
+                Name="stickyScroll"
+                Height="460"
                 HorizontalAlignment="Stretch"
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
-                <StackPanel
-                    Height="340"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Background="Black">
-                    <TextBlock
-                        x:Name="stickyTexts"
-                        Width="780"
-                        Padding="10"
-                        Background="Black"
-                        Foreground="Yellow"
-                        TextWrapping="Wrap">
-                        <Run Foreground="Yellow" Text="Videoların dönüştürüleceği klasör adresi aşağıdaki alana girildikten sonra videoları dönüştür butonu ile tüm alt klasördekiler dahil videolar dönüştürülecektir." />
-                        <LineBreak />
-                        <Run Foreground="Red" Text="Dikkat : Bu işlem uzun sürebilir ve sunucunun işlemci yükünü artırabilir." />
-                    </TextBlock>
-                    <TextBlock
-                        x:Name="progressTexts"
-                        Width="780"
-                        Padding="10"
-                        Background="Black"
-                        Foreground="Yellow"
-                        TextWrapping="Wrap" />
-                </StackPanel>
+                <TextBlock
+                    Name="stickyTexts"
+                    Padding="10"
+                    Background="Black"
+                    TextWrapping="Wrap" />
             </ScrollViewer>
-        </Grid>
-        <ProgressBar
-            x:Name="progressBar"
-            Width="700"
-            Height="10"
-            Margin="5"
-            Maximum="100"
-            Minimum="0"
-            Value="0" />
-        <DockPanel Width="700">
-            <DockPanel VerticalAlignment="Center">
-                <Label HorizontalAlignment="Left" VerticalAlignment="Center">Kullanılacak Cpu</Label>
-                <TextBox
-                    x:Name="useCpuCount"
-                    Width="40"
-                    Height="20"
-                    HorizontalAlignment="Right"
-                    HorizontalContentAlignment="Right"
-                    Text="8"
-                    TextChanged="UseCpuCount_OnTextChanged" />
-                <Label
-                    x:Name="totalCpuCount"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center">
-                    24
-                </Label>
-                <Label
-                    x:Name="cpuUsePercent"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center">
-                    %50
-                </Label>
-            </DockPanel>
+        </StackPanel>
+    </DockPanel>
 
-            <CheckBox
-                x:Name="checkBox"
-                Width="200"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Backup Dosyalarını Sil"
-                IsChecked="True" />
-            <CheckBox
-                x:Name="onlyBigFiles"
-                Width="100"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Content="Only Big Files" />
-            <ComboBox
-                Name="ComboBox1"
-                Width="80"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
-                <ComboBoxItem
-                    Content=".mp4"
-                    IsSelected="True"
-                    Selected="mp4_OnSelected" />
-                <ComboBoxItem Content=".webm" Selected="webm_OnSelected" />
-            </ComboBox>
-            <Label
-                x:Name="lblProcessTime"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Foreground="Green">
-                toplam süre 00:00:00
-            </Label>
-
-
-        </DockPanel>
-        <DockPanel Width="700">
-            <Label
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
-                Klasör Adresi
-            </Label>
-            <TextBox
-                x:Name="folder"
-                Width="600"
-                Height="30"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                TextWrapping="Wrap" />
-        </DockPanel>
-        <DockPanel Width="700">
-
-            <DockPanel
-                Width="700"
-                Height="40"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center">
-
-                <Button
-                    Width="150"
-                    Height="30"
-                    Margin="0,0,10,0"
-                    HorizontalAlignment="Left"
-                    Click="Clear_Click"
-                    Content="Ekranı Temizle" />
-                <Button
-                    Width="150"
-                    Height="30"
-                    Margin="0,0,10,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Click="ClearBackup"
-                    Content="Backup Temizle" />
-                <Button
-                    x:Name="btnPlay"
-                    Width="50"
-                    Height="30"
-                    HorizontalAlignment="Right"
-                    Background="Green"
-                    Click="Play"
-                    Content="&gt;"
-                    IsEnabled="False" />
-                <Button
-                    x:Name="btnPause"
-                    Width="50"
-                    Height="30"
-                    HorizontalAlignment="Right"
-                    Background="Red"
-                    Click="Pause"
-                    Content="||"
-                    IsEnabled="False" />
-                <Button
-                    x:Name="btnRemoveHistory"
-                    Width="50"
-                    Height="30"
-                    HorizontalAlignment="Right"
-                    Background="Red"
-                    Click="Clear_History"
-                    Content="temizle" />
-                <Button
-                    x:Name="buttonConvert"
-                    Width="150"
-                    Height="30"
-                    HorizontalAlignment="Right"
-                    Background="CadetBlue"
-                    Click="ButtonRun_Click"
-                    Content="Videoları Dönüştür" />
-
-            </DockPanel>
-
-        </DockPanel>
-    </StackPanel>
     <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition />

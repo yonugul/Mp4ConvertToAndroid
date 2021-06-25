@@ -43,6 +43,10 @@ namespace Mp4ConvertToAndroid
         private void AddMessage(string text, TimeSpan? d = null, Color? c = null, bool clearPrevious = false, double progressB = 0, bool sticky = false)
         {
             var tBlock = sticky ? stickyTexts : progressTexts;
+            if (tBlock==null)
+            {
+                tBlock = progressTexts;
+            }
             if (clearPrevious)
             {
                 progressTexts.Inlines.Clear();
@@ -78,7 +82,9 @@ namespace Mp4ConvertToAndroid
             {
                 lblProcessTime.Content = allTime.Elapsed.ToString(@"hh\:mm\:ss");
             }
-            scrollViewer.ScrollToBottom();
+            scrollViewer?.ScrollToBottom();
+            stickyScroll?.ScrollToBottom();
+
         }
 
         private const string baseCode = "-c:v libx264 -profile:v baseline -level 3.0 -preset:v veryfast -threads ";
@@ -148,7 +154,7 @@ namespace Mp4ConvertToAndroid
                     var thisVideoStart = allTime.Elapsed;
                     if (!File.Exists(backupFile))
                     {
-                        if (inputFile.EndsWith(".mp4") )
+                        if (inputFile.EndsWith(convertFileExt))
                         {
                             if (onlyBigFiles.IsChecked.HasValue && onlyBigFiles.IsChecked.Value)
                             {
@@ -195,6 +201,7 @@ namespace Mp4ConvertToAndroid
                         {
                             //bu dosyanın video çözüm öğretmenleri tarafından silindiği düşünülerek silinmesi sağlanacak
                             File.Delete(inputFile);
+                            AddMessage($"{inputFile} silindi - çözüm öğretmeni tarafından silinen video", c: Colors.Red,sticky:true);
                             //File.Move(inputFile, Path.ChangeExtension(inputFile,".deleted"));
                         }
 
@@ -204,16 +211,16 @@ namespace Mp4ConvertToAndroid
                         AddMessage($"{inputFile} önceden dönüştürülmüş ");
                         success++;
                     }
-                    Properties.Settings.Default.ConvertedVideos.Add(inputFile);
+                    //Properties.Settings.Default.ConvertedVideos.Add(inputFile);
 
                 }
                 catch (Exception ex)
                 {
-                    AddMessage($" ! {inputFile} dönüştürülemedi  : " + ex.Message, c: Colors.Red);
-                    Properties.Settings.Default.errors.Add(inputFile);
+                    AddMessage($" ! {inputFile} dönüştürülemedi  : " + ex.Message, c: Colors.Red,sticky:true);
+                    //Properties.Settings.Default.errors.Add(inputFile);
                     error++;
                 }
-                Properties.Settings.Default.Save();
+                //Properties.Settings.Default.Save();
                 completed++;
                 counter++;
                 var percent = completed / all * 100;
