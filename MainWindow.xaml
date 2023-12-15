@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
     Width="1200"
-    Height="500"
+    Height="550"
     mc:Ignorable="d">
     <DockPanel>
         <StackPanel>
@@ -122,6 +122,22 @@
                     Height="30"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    TextWrapping="Wrap" />
+            </DockPanel>
+            <DockPanel Width="700" Margin="0,2,0,0">
+                <Label
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                    FFmpeg Kodu
+                </Label>
+                <TextBox
+                    x:Name="customcode"
+                    Width="600"
+                    Height="30"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    TextChanged="CustomCode_OnTextChanged"
                     TextWrapping="Wrap" />
             </DockPanel>
             <DockPanel Width="700">
