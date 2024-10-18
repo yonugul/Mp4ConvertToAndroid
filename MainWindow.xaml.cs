@@ -186,9 +186,21 @@ namespace Mp4ConvertToAndroid
                             {
                                 using (var ffmpeg = new FFmpeg(FFmpegFileName))
                                 {
-                                    AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
-                                    var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
-                                    ffmpeg.Run(inputFile, outputFile, commandLine);
+                                    try
+                                    {
+                                        AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
+                                        var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
+                                        ffmpeg.Run(inputFile, outputFile, commandLine);
+                                        AddMessage($" > {outputFile} dosyası başarıyla oluşturuldu");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        AddMessage($"Hata: {ex.Message}");
+                                        // Gerekli loglama veya hata yönetim işlemleri
+                                    }
+                                    //AddMessage($" > {inputFile} dönüştürme işlemi başladı ");
+                                    //var commandLine = string.Format($"-i \"{inputFile}\" {code} \"{outputFile}\"");
+                                    //ffmpeg.Run(inputFile, outputFile, commandLine);
                                 }
                                 AddMessage($" || {inputFile} dönüştürüldü ", allTime.Elapsed.Subtract(thisVideoStart));
                                 success++;
